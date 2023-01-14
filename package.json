@@ -1,0 +1,46 @@
+{
+  "name": "@incubiq/siww",
+  "description": "Sign-In with Wallet JS libs",
+  "version": "1.0.1",
+  "author": "Eric Duneau <eric@incubiq.com>",
+  "license": "MIT",
+  "keywords": [
+    "cardano",
+    "siww",
+    "wallet oauth",
+    "wallet authentication",
+    "siwc",
+    "siwcjs",
+    "sign-in with wallet",
+    "authentication"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/incubiq/sign_in_with_wallet/npm_siww/"
+  },
+  "devDependencies": {
+    "cbor": "^8.1.0",
+    "http2": "^3.3.7",
+    "@blockfrost/blockfrost-js": "^5.1.0",
+    "@emurgo/cardano-message-signing-asmjs": "^1.0.1",
+    "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4-beta.4",
+    "@stablelib/random": "^1.0.1"
+  },
+  "files": [
+    "libs/",
+    "History.md",
+    "LICENSE",
+    "index.js",
+    "Readme.md"
+  ],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "engines": {
+    "node": ">= 0.6"
+  },
+  "scripts": {},
+  "main": "index.js"
+}
