@@ -254,38 +254,43 @@ export class siwc_connect  extends siww_connect {
 
     // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
-        let COSESign1Message=null;
-        const usedAddresses = await objSiwcMsg.api.getUsedAddresses();
-        const usedAddress = usedAddresses[0];
-
-        let aMsg=[];
-        aMsg.push( objSiwcMsg.message);
-        aMsg.push( " -- Secure message by Sign With Wallet --");
-        aMsg.push( "Purpose: "+ type);
-        aMsg.push( "Issued At: "+ objSiwcMsg.issued_at);
-        aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
-        aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
-        let msg=aMsg.join("\r\n");
-        let _hex= Buffer.from(msg).toString('hex');
         try {
+            let COSESign1Message=null;
+            const usedAddresses = await objSiwcMsg.api.getUsedAddresses();
+            const usedAddress = usedAddresses[0];
+
+            let aMsg=[];
+            aMsg.push( objSiwcMsg.message);
+            aMsg.push( " -- Secure message by Sign With Wallet --");
+            aMsg.push( "Purpose: "+ type);
+            aMsg.push( "Issued At: "+ objSiwcMsg.issued_at);
+            aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
+            aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
+            let msg=aMsg.join("\r\n");
+            let _hex= Buffer.from(msg).toString('hex');
             COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);
+
+            // notify?
+            if(this.fnOnNotifySignedMessage) {
+                this.fnOnNotifySignedMessage(COSESign1Message);
+            }
+
+            // add info for server side validation
+            COSESign1Message.valid_for=objSiwcMsg.valid_for;
+            COSESign1Message.issued_at=objSiwcMsg.issued_at;
+            COSESign1Message.address=usedAddress;
+            COSESign1Message.connector=CONNECTOR_NAME;
+            COSESign1Message.type=type;
+            return COSESign1Message;
+
         }
         catch(err) {
-            return null;
+            console.log (err.info);
+            throw ({
+                code: 404,
+                message: err.info
+            });
         }
-
-        // notify?
-        if(this.fnOnNotifySignedMessage) {
-            this.fnOnNotifySignedMessage(COSESign1Message);
-        }
-
-        // add info for server side validation
-        COSESign1Message.valid_for=objSiwcMsg.valid_for;
-        COSESign1Message.issued_at=objSiwcMsg.issued_at;
-        COSESign1Message.address=usedAddress;
-        COSESign1Message.connector=CONNECTOR_NAME;
-        COSESign1Message.type=type;
-        return COSESign1Message;
     }
 }
 

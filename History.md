@@ -1,3 +1,8 @@
+
+1.0.2 / 2023-01-17
+==================
+  * Better dealing with wallet connection errors
+
 1.0.1 / 2023-01-03
 ==================
   * Changing major release number to 1.x, as it is now prod ready (tested with Cardano Nami and Yoroi plugins)
