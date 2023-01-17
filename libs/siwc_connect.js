@@ -200,13 +200,10 @@ export class siwc_connect  extends siww_connect {
                 return _firstAddress    
             }
             else {
-                let _err = {
-                    code: 400
-                }
-                throw _err;
+                throw new Error("Could not access first address of wallet");
             }
         } catch (err) {
-            console.log ("Could not access first address of wallet")
+            console.log (err.message)
         }
         return null;
     }
@@ -219,13 +216,10 @@ export class siwc_connect  extends siww_connect {
                 return _firstAddress
             }
             else {
-                let _err = {
-                    code: 400
-                }
-                throw _err;
+                throw new Error("Could not access any unused addresses of wallet");
             }
         } catch (err) {
-            console.log ("Could not access any unused addresses of wallet")
+            console.log (err.message)
         }
         return null;
     }
@@ -286,10 +280,7 @@ export class siwc_connect  extends siww_connect {
         }
         catch(err) {
             console.log (err.info);
-            throw ({
-                code: 404,
-                message: err.info
-            });
+            throw new Error(err.info);
         }
     }
 }

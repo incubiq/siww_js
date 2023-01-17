@@ -1,4 +1,8 @@
 
+1.0.3 / 2023-01-17
+==================
+  * Further dealings with wallet connection errors
+
 1.0.2 / 2023-01-17
 ==================
   * Better dealing with wallet connection errors
