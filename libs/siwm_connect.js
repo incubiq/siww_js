@@ -1,70 +1,34 @@
 /*
- *      Sign-In With Cardano / wallet connect
+ *      Sign-In With Metamask / wallet connect
  */
 
 import {siww_connect} from "./siww_connect"
+import Web3 from 'web3';
 
-// import cbor from 'cbor'
-import {
-  Address,
-  Value,
-  /*
-  BaseAddress,
-  MultiAsset,
-  Assets,
-  ScriptHash,
-  Costmdls,
-  Language,
-  CostModel,
-  AssetName,
-  TransactionUnspentOutput,
-  TransactionUnspentOutputs,
-  TransactionOutput,
-  TransactionBuilder,
-  TransactionBuilderConfigBuilder,
-  TransactionOutputBuilder,
-  LinearFee,
-  BigNum,
-  BigInt,
-  TransactionHash,
-  TransactionInputs,
-  TransactionInput,
-  TransactionWitnessSet,
-  Transaction,
-  PlutusData,
-  PlutusScripts,
-  PlutusScript,
-  PlutusList,
-  Redeemers,
-  Redeemer,
-  RedeemerTag,
-  Ed25519KeyHashes,
-  ConstrPlutusData,
-  ExUnits,
-  Int,
-  NetworkInfo,
-  EnterpriseAddress,
-  TransactionOutputs,
-  hash_transaction,
-  hash_script_data,
-  hash_plutus_data,
-  ScriptDataHash, Ed25519KeyHash, NativeScript, StakeCredential
-  */
-} from "@emurgo/cardano-serialization-lib-asmjs";
+const web3 = new Web3(Web3.givenProvider || window.location.origin);
 
-const CONNECTOR_NAME = "SIWC"
+const CONNECTOR_NAME = "SIWM"
 
-const CARDANO_NETWORK = "cardano"
-const CARDANO_MAINNET = "Cardano Mainnet"
-
-const DEPRECATED_WALLETS = ["ccvault"]          // ID of all wallets we are not going to accept
+const METAMASK_ETH_NETWORK = "ethereum"
+const METAMASK_ETH_MAINNET = "Ethereum Mainnet"
+const METAMASK_BSC_MAINNET = "BSC Mainnet"
 
 // we ONLY list PROD chains here
 const chainIDs =  {
-    "1": {chain: CARDANO_MAINNET, symbol:"ADA"},
-}
+    "1": {chain: METAMASK_ETH_MAINNET, symbol:"ETH"},
+    "56": {chain: METAMASK_BSC_MAINNET, symbol:"BNB"},
+    "137": {chain: "Polygon Mainnet", symbol: "MATIC"},
+    "42161": {chain: "Arbitrum One", symbol: "ETH"},
+    "43114": {chain: "Avalanche C-Chain", symbol: "AVAX"},
+    "10": {chain: "Optimism", symbol: "ETH"},
+    "250": {chain: "Fantom Opera", symbol: "FTM"},
+    "42220": {chain: "Celo Mainnet", symbol: "CELO"},
+    "9001": {chain: "Evmos", symbol: "Evmos"},
+    "2203": {chain: "Bitcoin EVM", symbol: "eBTC"}
+};      // find more here : https://chainlist.org/
 
-export class siwc_connect  extends siww_connect {
+
+export class siwm_connect  extends siww_connect {
 
 //
 //      helpers
@@ -72,7 +36,7 @@ export class siwc_connect  extends siww_connect {
 
     createDefaultWallet(_idWallet) {
         let objDefault={
-            chain: CARDANO_NETWORK,
+            chain: null,
             connector: CONNECTOR_NAME,
             id: _idWallet,                                            // id of wallet
             api: null,
@@ -85,10 +49,9 @@ export class siwc_connect  extends siww_connect {
             networkId: 0,
             address: null
         }
-        if(window && window.cardano) {
-            objDefault.apiVersion=window.cardano[_idWallet].apiVersion;     // get API version of wallet
-            objDefault.name=window.cardano[_idWallet].name;                 // get name of wallet
-            objDefault.logo=window.cardano[_idWallet].icon;                 // get get wallet logo
+        if(window && window.ethereum && window.ethereum.isMetaMask) {
+            objDefault.name="Metamask";                 // get name of wallet
+            objDefault.logo="/assets/images/metamask.png";                 // get get wallet logo ; sorry it s hardcoded
         }
 
         return this.getSanitizedWallet(objDefault);
@@ -97,10 +60,16 @@ export class siwc_connect  extends siww_connect {
     getAcceptedChains() {
         return [{
             connector: CONNECTOR_NAME,
-            name: CARDANO_MAINNET,
-            symbol: "ADA",
+            name: METAMASK_ETH_MAINNET,
+            symbol: "ETH",
             id: 1,
-            image : "symbol_cardano.png"        // sorry, hardcoded
+            image : "symbol_ethereum.png"        // sorry, hardcoded
+        }, {
+            connector: CONNECTOR_NAME,
+            name: METAMASK_BSC_MAINNET,
+            symbol: "BNB",
+            id: 56,
+            image : "symbol_binance.png"         // sorry, hardcoded
         }];
     }
 
@@ -109,26 +78,17 @@ export class siwc_connect  extends siww_connect {
 //
 
     async async_initialize(objParam) {
-        await super.async_initialize(objParam);        
+        await super.async_initialize(objParam);       
     }
 
     async async_onListAccessibleWallets() {
         try {
             let _aWallet=[];
-            if(window && window.cardano) {
-                for (const key in window.cardano) {
+            if(window && window.ethereum && window.ethereum.isMetaMask) {
+                let objWallet = await this.async_getDefaultWalletInfo("Metamask");
 
-                    // process if not deprecated
-                    if(!DEPRECATED_WALLETS.includes(key)) {
-                        if(window.cardano[key].hasOwnProperty("apiVersion")) {
-                            let objWallet = await this.async_getDefaultWalletInfo(key);
-                            
-                            // push info for connection
-                            _aWallet.push(this.getSanitizedWallet(objWallet));
-                        }
-    
-                    }
-                }
+                // push info for connection
+                _aWallet.push(this.getSanitizedWallet(objWallet));
             }
             return _aWallet;
         }
@@ -144,18 +104,24 @@ export class siwc_connect  extends siww_connect {
     async async_enableWallet(idWallet) {
         let _api=null;
         try {
-            _api = await window.cardano[idWallet].enable();
+            await web3.eth.requestAccounts();
+            _api=function(){};  // no api here... but compatibility...
         }
         catch(err) {
             console.log ("Wallet connection refused ")
         }
+
         return _api;
     }
 
     async async_isWalletEnabled(idWallet) {
         let _isEnabled=false;
         try {
-            _isEnabled=await window.cardano[idWallet].isEnabled();
+            if(window && window.ethereum && window.ethereum.isMetaMask)  {
+                let _isMetamask=window.ethereum.isConnected();
+                let _a=await window.ethereum.request({ method: 'eth_accounts' });
+                _isEnabled=(_a !==false && _a.length>0);
+            }
         } catch (err) {
             console.log ("Could not ask if wallet is enabled")
         }
@@ -170,7 +136,6 @@ export class siwc_connect  extends siww_connect {
                 throw new Error("Could not find wallet "+_id);
             }
 
-            // are we enabled?
             _objWallet=_objWallet.wallet;
             if(!_objWallet.api && _objWallet.id!==null) {
                 _objWallet.api = await this.async_enableWallet(_objWallet.id);
@@ -180,20 +145,18 @@ export class siwc_connect  extends siww_connect {
                 throw new Error("Bad params");
             }
 
-            let _networkId = await _objWallet.api.getNetworkId();
+            let _networkId = parseInt(window.ethereum.networkVersion);
             let _aChain=this.getAcceptedChains();
             let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
             _objWallet.networkId = _networkId;
-            _objWallet.isOnProd=chainIDs[_networkId]!==null;
+            _objWallet.isOnProd=chainIDs[window.ethereum.networkVersion]!==null;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
             _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo() ;
-            _objWallet.balance = await this._async_getBalance(_objWallet.api);
-            _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;
             return _objWallet;
         }
         catch(err) {
-            if(_objWallet) {_objWallet.isEnabled=false;}
+            _objWallet.isEnabled=false;
             return _objWallet;
         }
     }
@@ -222,10 +185,10 @@ export class siwc_connect  extends siww_connect {
 
     async _async_getFirstAddress(_api) {
         try {
-            const aRaw = await _api.getUsedAddresses();
-            if(aRaw && aRaw.length>0) {
-                const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
-                return _firstAddress    
+            // get the account
+            let aAccounts=await web3.eth.requestAccounts();
+            if(aAccounts.length>0) {
+                return aAccounts[0];
             }
             else {
                 throw new Error("Could not access first address of wallet");
@@ -238,10 +201,8 @@ export class siwc_connect  extends siww_connect {
 
     async _async_getUnusedAddress(_api) {
         try {
-            const aRaw = await _api.getUnusedAddresses();
-            if(aRaw && aRaw.length>0) {
-                const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
-                return _firstAddress
+            if(true) {
+                return [];
             }
             else {
                 throw new Error("Could not access any unused addresses of wallet");
@@ -252,21 +213,14 @@ export class siwc_connect  extends siww_connect {
         return null;
     }
 
-    async _async_getUtxo(_api) {
-        try {
-            let aUnspent = await _api.getUtxos();
-            return aUnspent;
-        } catch (err) {
-            console.log ("Could not get UTxO");
-        }
+    async _async_getUtxo(_api) {       
         return null;
     }
 
     async _async_getBalance(_api) {
         try {
-            let cborBal = await _api.getBalance();
-//          let amount=cbor.decodeFirstSync(cborBal);  // other alternative to decode the cbor
-            let amount=Value.from_bytes(Buffer.from(cborBal, "hex")).coin();        
+            // todo
+            let amount=0;  
             return amount;
         } catch (err) {
             console.log ("Could not get Balance");
@@ -277,14 +231,20 @@ export class siwc_connect  extends siww_connect {
     // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
         try {
-            let COSESign1Message=null;
-            const usedAddresses = await objSiwcMsg.api.getUsedAddresses();
+            const usedAddresses = await web3.eth.getAccounts();
             const usedAddress = usedAddresses[0];
+
+            if(usedAddress!==objSiwcMsg.address) {
+                throw new Error("Public address does not match");
+            }
 
             let msg=this.getMessageAsText(objSiwcMsg, type);
             let _hex= Buffer.from(msg).toString('hex');
-            COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);
-
+            let _signed = await web3.eth.personal.sign(msg, objSiwcMsg.address);
+            let COSESign1Message={
+                key: _hex,
+                signature: _signed
+            }
             // notify?
             if(this.fnOnNotifySignedMessage) {
                 this.fnOnNotifySignedMessage(COSESign1Message);
@@ -306,4 +266,4 @@ export class siwc_connect  extends siww_connect {
     }
 }
 
-export default siwc_connect;
+export default siwm_connect;

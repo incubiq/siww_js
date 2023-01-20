@@ -1,4 +1,8 @@
 
+1.0.4 / 2023-01-20
+==================
+  * Big update to include Metamask support (works but may iron out code later)
+
 1.0.3 / 2023-01-17
 ==================
   * Further dealings with wallet connection errors
