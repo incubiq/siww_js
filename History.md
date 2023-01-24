@@ -1,4 +1,8 @@
 
+1.0.5 / 2023-01-24
+==================
+  * Dealing with all networks on Ethereum (most do not yet have icons / name for their networkId)
+
 1.0.4 / 2023-01-20
 ==================
   * Big update to include Metamask support (works but may iron out code later)
