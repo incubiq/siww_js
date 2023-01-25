@@ -1,7 +1,7 @@
 
-1.0.6 / 2023-01-25
+1.0.7 / 2023-01-25
 ==================
-  * Adding suport of Keplr (cosmos chain)
+  * Adding suport of Keplr (cosmos chain) and dealing better with error message on Metamask
 
 1.0.5 / 2023-01-24
 ==================
