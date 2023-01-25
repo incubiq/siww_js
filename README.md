@@ -2,8 +2,8 @@
 
 Sign-In With Wallet
 
-This JS package implements a generic connection to Crypto wallets, and a specific first implementation for Cardano wallets. 
-More wallet support may come later. This is now Prod ready for Cardano, including connecting to wallet, requesting wallet connect authorization, and signing message for authorization. 
+This JS package implements a generic connection to Crypto wallets, and a specific implementation per wallet and/or Blockchain. 
+This package is production-ready and is used for user authentication via their wallet. The first implementation was made for Cardano, including connecting to wallet, requesting wallet connect authorization, signing message for authorization. The library now also supports Metamask and Keplr wallets. More to come later... 
 
 This library was first made, and is maintained, for SignWithWallet.com 
 
@@ -21,11 +21,13 @@ $ npm install @incubiq/siww
 
 ```js
 const SIWW = require('@incubiq/siww');      // the generic access to wallet connectors 
-let siwc=SIWW.getConnector("cardano");      // the Cardano wallet connector
+let siwc=SIWW.getConnector("cardano");      // the Cardano wallets connector (multi-wallet support)
+let siwm=SIWW.getConnector("metamask");     // the Metamask wallet connector (multi-chain support)
+let siwk=SIWW.getConnector("keplr");        // the Keplr wallet connector (multi-chain support in principle, currently cosmos)
 
 ```
 
-This library allows you to Authenticate via a Cardano compatible wallet
+This library allows you to Authenticate via a Cardano compatible wallet, as well as other wallets, such as Metamask (multi-chain), Keplr (cosmos). More wallet support to come...
 
 ### siwc.async_initialize({onNotifyAccessibleWallets: function(_aWallet){}, onNotifyConnectedWallet: function(_obj){}, onNotifySignedMessage: function(_wallet){}});  
 
@@ -36,18 +38,19 @@ Call this function to initialize the Sign-in With Cardano library. The function 
  - 'onNotifyAccessibleWallets(_wallet)' is called at initialization for each accessible Cardano wallet (browser plugins)
 
 
-### siwc.async_connectWallet(_id)
+### SIWW.async_connectWallet(_id)
 
-Call this function to connect to a wallet whose ID is _id. For example, to connect to a nami Cardano wallet, call 'siwc.async_connectWallet("nami")'
+Call this function to connect to a wallet whose ID is _id. For example, to connect to a nami Cardano wallet, call 'SIWW.async_connectWallet("nami")'
 If siwc was first initialized with a callback (onNotifyConnectedWallet), it will be called upon sucessful (or failed) connection.
+Note that you can call directly siwc.async_connectWallet("nami") or otherwise the more generic SIWW.async_connectWallet("nami") which will recognise "nami" as a cardano wallet and therefore redirect the call to "siwc".
 
 
-### siwc.async_createMessage(_id,  {message: "sample message...", version: "1.0", valid_for: 300})
+### SIWW.async_createMessage(_id,  {message: "sample message...", version: "1.0", valid_for: 300})
 
 Call this function to create a message that will be ready for processing by async_signMessage(...)
 
 
-### siwc.async_signMessage(_id, objSiwcMsg, "authentication");
+### SIWW.async_signMessage(_id, objSiwcMsg, "authentication");
 
 Call this function to request the wallet to present the end-user with a Sign Message dialog, containing the requested message and some additional info for certified validity of caller. This function will return the message signature as well as a few additional params for server verification of the signature.
 

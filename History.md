@@ -1,4 +1,8 @@
 
+1.0.6 / 2023-01-25
+==================
+  * Adding suport of Keplr (cosmos chain)
+
 1.0.5 / 2023-01-24
 ==================
   * Dealing with all networks on Ethereum (most do not yet have icons / name for their networkId)

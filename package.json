@@ -1,17 +1,18 @@
 {
   "name": "@incubiq/siww",
   "description": "Sign-In with Wallet JS libs",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "Eric Duneau <eric@incubiq.com>",
   "license": "MIT",
   "keywords": [
-    "cardano",
     "siww",
     "wallet oauth",
     "wallet authentication",
     "siwc",
     "siwcjs",
-    "metamask",
+    "sign with cardano",
+    "sign with metamask",
+    "sign with keplr",
     "sign-in with wallet",
     "authentication"
   ],
