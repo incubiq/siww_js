@@ -52,7 +52,7 @@ import {
   */
 } from "@emurgo/cardano-serialization-lib-asmjs";
 
-const CONNECTOR_NAME = "SIWC"
+const CONNECTOR_SYMBOL = "SIWC"
 
 const CARDANO_NETWORK = "cardano"
 const CARDANO_MAINNET = "Cardano Mainnet"
@@ -73,7 +73,7 @@ export class siwc_connect  extends siww_connect {
     createDefaultWallet(_idWallet) {
         let objDefault={
             chain: CARDANO_NETWORK,
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             id: _idWallet,                                            // id of wallet
             api: null,
             apiVersion: null,
@@ -96,12 +96,26 @@ export class siwc_connect  extends siww_connect {
 
     getAcceptedChains() {
         return [{
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             name: CARDANO_MAINNET,
             symbol: "ADA",
             id: 1,
             image : "symbol_cardano.png"        // sorry, hardcoded
         }];
+    }
+
+    getConnectorSymbol() {
+        return CONNECTOR_SYMBOL;
+    }
+
+    getConnectorMetadata (){
+        return {
+            symbol: CONNECTOR_SYMBOL,         // symbol
+            connector_name: CARDANO_NETWORK,  // name of this connector
+            wallet_name: "Cardano wallets",   // target display name
+            blockchain_name: CARDANO_MAINNET, // blockchain name
+            window: "cardano",                // the window element to explore
+        }
     }
 
 //
@@ -187,7 +201,6 @@ export class siwc_connect  extends siww_connect {
             _objWallet.isOnProd=chainIDs[_networkId]!==null;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
             _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
-            _objWallet.balance = await this._async_getBalance(_objWallet.api);
             _objWallet.isEnabled=true;
             return _objWallet;
         }
@@ -256,7 +269,7 @@ export class siwc_connect  extends siww_connect {
             COSESign1Message.valid_for=objSiwcMsg.valid_for;
             COSESign1Message.issued_at=objSiwcMsg.issued_at;
             COSESign1Message.address=usedAddress;
-            COSESign1Message.connector=CONNECTOR_NAME;
+            COSESign1Message.connector=CONNECTOR_SYMBOL;
             COSESign1Message.type=type;
             return COSESign1Message;
 
