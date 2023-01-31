@@ -21,9 +21,9 @@ $ npm install @incubiq/siww
 
 ```js
 const SIWW = require('@incubiq/siww');      // the generic access to wallet connectors 
-let siwc=SIWW.getConnector("cardano");      // the Cardano wallets connector (multi-wallet support)
-let siwm=SIWW.getConnector("metamask");     // the Metamask wallet connector (multi-chain support)
-let siwk=SIWW.getConnector("keplr");        // the Keplr wallet connector (multi-chain support in principle, currently cosmos)
+let siwc=SIWW.getConnector("SIWC");         // the Cardano wallets connector (multi-wallet support)
+let siwm=SIWW.getConnector("SIWM");         // the Metamask wallet connector (multi-chain support)
+let siwk=SIWW.getConnector("SIWK");         // the Keplr wallet connector (multi-chain support in principle, currently cosmos)
 
 ```
 

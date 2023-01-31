@@ -4,7 +4,9 @@
 
 import {siww_connect} from "./siww_connect"
 
-const CONNECTOR_NAME = "SIWK"
+const CONNECTOR_SYMBOL = "SIWK"
+const CONNECTOR_NAME = "Keplr"
+
 const KEPLR_ATOM_NETWORK = "keplr"
 const KEPLR_ATOM_MAINNET = "Atom Mainnet"
 
@@ -14,7 +16,7 @@ const chainIDs =  {
 };      
 
 let gaChain=[{
-    connector: CONNECTOR_NAME,
+    connector: CONNECTOR_SYMBOL,
     name: "Cosmos Hub",
     symbol: "ATOM",
     id: "cosmoshub-4",
@@ -33,7 +35,7 @@ export class siwk_connect  extends siww_connect {
     createDefaultWallet(_idWallet) {
         let objDefault={
             chain: null,                       
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             id: _idWallet,                                            // id of wallet
             api: null,
             apiVersion: null,
@@ -63,7 +65,7 @@ export class siwk_connect  extends siww_connect {
             let _isRegistered=gaChain.findIndex(function (x) {return x.id===_aChain[i].chainId});
             if(_isRegistered===-1) {
                 gaChain.push({
-                    connector: CONNECTOR_NAME,
+                    connector: CONNECTOR_SYMBOL,
                     name: _aChain[i].chainName,
                     symbol: (_aChain[i].currencies && _aChain[i].currencies.length>0? _aChain[i].currencies[0].coinDenom: null),
                     id: _aChain[i].chainId,
@@ -72,6 +74,21 @@ export class siwk_connect  extends siww_connect {
             }
         }
     }
+
+    getConnectorSymbol() {
+        return CONNECTOR_SYMBOL;
+    }
+
+    getConnectorMetadata (){
+        return {
+            symbol: CONNECTOR_SYMBOL,         // symbol
+            connector_name: CONNECTOR_NAME,   // name of this connector
+            wallet_name: CONNECTOR_NAME,      // target display name
+            blockchain_name: KEPLR_ATOM_MAINNET,  // blockchain name
+            window: "keplr",                  // the window element to explore            
+        }
+    }
+
 
 //
 //      Initialization
@@ -221,7 +238,7 @@ export class siwk_connect  extends siww_connect {
             COSESign1Message.issued_at=objSiwcMsg.issued_at;
             COSESign1Message.address=address;
             COSESign1Message.chain=_idWallet;
-            COSESign1Message.connector=CONNECTOR_NAME;
+            COSESign1Message.connector=CONNECTOR_SYMBOL;
             COSESign1Message.type=type;
             return COSESign1Message;
         }
