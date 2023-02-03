@@ -1,4 +1,4 @@
-1.1.0 / 2023-02-03
+1.1.1 / 2023-02-03
 ==================
   * Adding suport of Phantom (Solana chain)
 

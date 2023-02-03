@@ -20,13 +20,10 @@ let gaChain=[{
 }];
 
 let isPhantomEnabled=true;        // oh that s bad... phantom does not know if it was enabled or not... so we have to think yes it was
-const isPhantomInstalled = window.phantom?.solana?.isPhantom;
+let isPhantomInstalled = (window.phantom && window.phantom.solana && window.phantom.solana.isPhantom);
 const getProvider = () => {
-    if ('phantom' in window) {
-      const provider = window.phantom?.solana;
-      if (provider?.isPhantom) {
-        return provider;
-      }
+    if (isPhantomInstalled) {
+      return window.phantom.solana;
     }
     return null;
   };
