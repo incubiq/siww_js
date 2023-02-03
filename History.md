@@ -1,3 +1,7 @@
+1.1.0 / 2023-02-03
+==================
+  * Adding suport of Phantom (Solana chain)
+
 1.0.9 / 2023-01-31
 ==================
   * Small update for improved support multi-wallet

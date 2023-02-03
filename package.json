@@ -1,7 +1,7 @@
 {
   "name": "@incubiq/siww",
   "description": "Sign-In with Wallet JS libs",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "author": "Eric Duneau <eric@incubiq.com>",
   "license": "MIT",
   "keywords": [
