@@ -168,11 +168,27 @@ export class siwc_connect  extends siww_connect {
 //      Misc access to wallet public info
 //
 
+    // Define a browser-compatible replacement for Buffer.from(hex, "hex")
+    hexStringToUint8Array(hexString) {
+        if (hexString.length % 2 !== 0) {
+        throw new Error('Invalid hex string');
+        }
+        const arrayBuffer = new Uint8Array(hexString.length / 2);
+        for (let i = 0; i < hexString.length; i += 2) {
+        const byteValue = parseInt(hexString.substring(i, i + 2), 16);
+        if (isNaN(byteValue)) {
+            throw new Error('Invalid hex string');
+        }
+        arrayBuffer[i/2] = byteValue;
+        }
+        return arrayBuffer;
+    }
+
     async _async_getFirstAddress(_api) {
         try {
             const aRaw = await _api.getUsedAddresses();
             if(aRaw && aRaw.length>0) {
-                const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
+                const _firstAddress = Address.from_bytes(this.hexStringToUint8Array(aRaw[0])).to_bech32();
                 return _firstAddress    
             }
             else {
@@ -188,7 +204,7 @@ export class siwc_connect  extends siww_connect {
         try {
             const aRaw = await _api.getUnusedAddresses();
             if(aRaw && aRaw.length>0) {
-                const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
+                const _firstAddress = Address.from_bytes(this.hexStringToUint8Array(aRaw[0], "hex")).to_bech32()
                 return _firstAddress
             }
             else {
